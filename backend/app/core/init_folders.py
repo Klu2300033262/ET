@@ -8,11 +8,12 @@ def initialize_folders():
     """Ensure all required system directories exist on startup."""
     required_directories = [
         "logs",
-        "data/manuals",
-        "data/inspection",
-        "data/maintenance",
-        "data/sop",
+        "data/raw",
+        "data/processed",
+        "data/ocr",
         "data/images",
+        "data/logs",
+        "data/temp",
         settings.CHROMA_PERSIST_DIR
     ]
     

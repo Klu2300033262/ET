@@ -7,5 +7,15 @@ CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 
 # File Configurations
-ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg", "tiff"}
-max_upload_size_mb = 50
+ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg", "tiff", "bmp", "txt"}
+MAX_UPLOAD_SIZE_MB = 200
+
+# Strict MIME Type Validation
+ALLOWED_MIME_TYPES = {
+    "application/pdf": "pdf",
+    "image/png": "png",
+    "image/jpeg": "jpeg",
+    "image/tiff": "tiff",
+    "image/bmp": "bmp",
+    "text/plain": "txt"
+}

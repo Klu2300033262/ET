@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from contextlib import asynccontextmanager
 
 from backend.app.config.settings import settings
@@ -10,6 +11,7 @@ from backend.app.core.exceptions import (
     global_exception_handler,
     api_exception_handler,
     validation_exception_handler,
+    http_exception_handler,
 )
 from backend.app.core.init_folders import initialize_folders
 from backend.app.api.router import api_router
@@ -44,6 +46,7 @@ setup_middleware(app)
 app.add_exception_handler(Exception, global_exception_handler)
 app.add_exception_handler(APIException, api_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 
 # 6. Include API Routers (Versioning prefix: /api/v1)
 app.include_router(api_router, prefix="/api/v1")

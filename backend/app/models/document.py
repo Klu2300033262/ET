@@ -1,32 +1,27 @@
-from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from pydantic import BaseModel, Field
+from typing import Optional
+from enum import Enum
 from datetime import datetime
 
-class DocumentBase(BaseModel):
-    filename: str
-    file_type: str
-    file_size: int
+class DocumentStatus(str, Enum):
+    UPLOADING = "UPLOADING"
+    PROCESSING = "PROCESSING"
+    OCR = "OCR"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
 
-class DocumentCreate(DocumentBase):
-    pass
-
-class DocumentMetadata(BaseModel):
-    author: Optional[str] = None
-    created_date: Optional[str] = None
-    page_count: int
-    source_url: Optional[str] = None
-
-class DocumentResponse(DocumentBase):
-    id: str
-    status: str  # pending, processing, completed, failed
-    metadata: DocumentMetadata
-    created_at: datetime
-    updated_at: datetime
-
-class DocumentChunk(BaseModel):
-    id: str
-    document_id: str
-    page_number: int
-    text_content: str
-    chunk_index: int
-    metadata: Dict[str, Any] = {}
+class DocumentIngestionResponse(BaseModel):
+    """Response returned when a document is fully ingested."""
+    document_id: str = Field(..., description="Unique identifier for the document")
+    filename: str = Field(..., description="Original filename")
+    file_size_bytes: int = Field(..., description="Size of the file in bytes")
+    num_pages: Optional[int] = Field(None, description="Number of pages (if applicable)")
+    document_type: str = Field(..., description="MIME type of the document")
+    text_length: int = Field(..., description="Total extracted text length (characters)")
+    ocr_used: bool = Field(False, description="Whether OCR was triggered")
+    processing_time_ms: int = Field(..., description="Total processing time in milliseconds")
+    upload_timestamp: datetime = Field(..., description="When the upload occurred")
+    sha256_hash: str = Field(..., description="SHA-256 hash of the original file")
+    status: DocumentStatus = Field(..., description="Final processing status")
+    extraction_method: str = Field(..., description="The primary parser/engine used")
+    saved_text_path: str = Field(..., description="Path to the raw extracted text file")
