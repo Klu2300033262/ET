@@ -1,85 +1,47 @@
 # IndusMindAI – Industrial Knowledge Intelligence Platform
 
-IndusMindAI is a professional Industrial Knowledge Intelligence Platform designed to ingest heterogeneous industrial documents (SOPs, manuals, blueprints, scanned records), extract multi-entity relationships, build an actionable Knowledge Graph via Neo4j, and facilitate semantic Search & Reasoning using hybrid GraphRAG. It incorporates specialized LangGraph agents for maintenance planning and regulatory compliance.
+An AI-powered Industrial Knowledge Intelligence Platform designed to ingest heterogeneous industrial documents, extract knowledge, build an industrial knowledge graph, enable intelligent RAG, and orchestrate multiple specialized AI agents for maintenance, compliance, and systems integration.
 
-## High-Level System Architecture
+## Project Overview
 
-Refer to [implementation_plan.md](file:///C:/Users/valli/.gemini/antigravity-ide/brain/a9dd4b41-03cb-426c-8457-bf5a43142fc7/implementation_plan.md) for full flowcharts and architectural module layouts.
+IndusMindAI serves as a single source of truth for complex industrial documentation, allowing engineers and operators to seamlessly query, troubleshoot, and interact with machine manuals, SOPs, and inspection reports through intuitive AI conversation.
 
-1. **Multimodal Document Ingestion Pipeline**: Ingests files (PDFs, images) and parses layout hierarchies.
-2. **Knowledge Extraction & Graph Creation**: LLM-guided schema extraction storing entities and relationships into Neo4j Graph DB alongside dense embeddings.
-3. **Multi-Agent Orchestrator**: LangGraph-based routing for hybrid GraphRAG querying, maintenance plans, and compliance audits.
-4. **Interactive Dashboard**: Modern glassmorphic React UI with Cytoscape-powered relationship navigation.
+## Architecture
 
-## Repository Setup & Directory Structure
+The project utilizes a modern multi-agent RAG (Retrieval-Augmented Generation) microservices architecture:
+- **Backend Infrastructure**: Built on **FastAPI** to serve robust, typed endpoints.
+- **Frontend Interface**: A dynamic **React** dashboard.
+- **Knowledge Base**: **ChromaDB** for vector semantic search, and **Neo4j** for relational knowledge graph representations of equipment hierarchies.
+- **Agent Orchestration**: **LangGraph** coordinates a `SupervisorAgent` that routes tasks to `KnowledgeAgent`, `MaintenanceAgent`, and `ComplianceAgent`.
 
-```
-C:\ET\
-├── backend/            # FastAPI Backend application
-└── frontend/           # React + Vite + TypeScript application
-```
+## Technologies
 
-## Quick Start Setup
+- **Python 3.12** / FastAPI / Pydantic
+- **React** (Frontend Framework)
+- **LangChain** / **LangGraph** (AI Orchestration)
+- **ChromaDB** (Vector Database)
+- **Neo4j** (Graph Database)
+- **Google Gemini 2.5 Flash** (Reasoning Engine)
+- **SentenceTransformers** (Local Embeddings)
 
-### Prerequisites
-* Python 3.12
-* Node.js v18+
-* Neo4j instance running (Local or Aura DB)
+## Setup & Execution
 
-### Environment Configuration
-1. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-2. Populate the required keys in `.env` (Gemini API key, Neo4j connection parameters).
+### 1. Backend Startup
 
-### Backend Virtual Environment Setup
-1. Create Python virtual environment:
-   ```bash
-   python -m venv .venv
-   ```
-2. Activate Virtual Environment:
-   * **Windows PowerShell**:
-     ```powershell
-     .\.venv\Scripts\Activate.ps1
-     ```
-   * **Windows Command Prompt / Git Bash**:
-     ```bash
-     source .venv/Scripts/activate
-     ```
-3. Install Python dependencies:
-   ```bash
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
+To initialize the virtual environment and start the API:
 
-### Frontend Dependencies Setup
-Install node modules:
-```bash
-npm install
+```powershell
+# Activate Environment
+cd backend
+..\.venv\Scripts\Activate.ps1
+
+# Run API Server
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
----
+### 2. Available Routes
+- **Interactive API Docs (Swagger)**: `http://127.0.0.1:8000/docs`
+- **System Health Check**: `http://127.0.0.1:8000/api/v1/health`
 
-## Executing Applications
-
-### Running FastAPI Backend
-From the root workspace, with the virtual environment activated, run:
-```bash
-uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-### Running Vite React Frontend
-From the root workspace:
-```bash
-npm run dev
-```
-
----
-
-## Verification
-Execute the verification sanity check scripts:
-```bash
-python verify_backend.py
-```
-This tests core dependency imports and credentials loading.
+### 3. Frontend (Coming in Future Stages)
+*Frontend setup will be detailed as the React environment is developed.*

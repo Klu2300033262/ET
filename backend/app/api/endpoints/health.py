@@ -14,5 +14,10 @@ async def health_check():
     return BaseResponse(
         success=True,
         message="System is fully operational",
-        data={"status": "healthy"}
+        data={
+            "status": "healthy",
+            "version": "1.0.0",
+            "environment": "development",
+            "service": "IndusMind AI Backend"
+        }
     )
