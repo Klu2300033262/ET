@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.app.api.endpoints import health, documents, processing
+from backend.app.api.endpoints import health, documents, processing, search, embeddings
 
 api_router = APIRouter()
 
@@ -7,6 +7,8 @@ api_router = APIRouter()
 api_router.include_router(health.router, tags=["System Health"])
 api_router.include_router(documents.router, prefix="/documents", tags=["Documents"])
 api_router.include_router(processing.router, prefix="/documents", tags=["Processing"])
+api_router.include_router(embeddings.router, prefix="/documents", tags=["Embeddings"])
+api_router.include_router(search.router, prefix="/search", tags=["Search"])
 
 # Placeholder endpoints for OpenAPI Tag generation in Swagger UI
 # We include empty routers to generate the tags cleanly in the UI

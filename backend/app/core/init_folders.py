@@ -12,6 +12,8 @@ def initialize_folders():
         "data/processed/text",
         "data/processed/metadata",
         "data/processed/chunks",  # Prepared for Stage 4
+        "data/embeddings",        # Prepared for Stage 5
+        "data/chromadb",          # Prepared for Stage 5
         "data/ocr",
         "data/images",
         "data/logs",
