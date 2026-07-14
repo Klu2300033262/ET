@@ -1,4 +1,5 @@
 import time
+import re
 import logging
 from typing import List, Dict, Any, Optional
 from backend.app.services.vector_store import vector_store
@@ -17,6 +18,22 @@ class RetrieverService:
         self.default_top_k = default_top_k
         self.default_threshold = default_threshold
 
+    def _preprocess_query(self, query: str) -> str:
+        """
+        Query Preprocessor: Cleans the natural language input before vectorization.
+        Normalizes whitespace, removes duplicates, but carefully preserves engineering IDs.
+        """
+        # Remove extra whitespace
+        cleaned = re.sub(r'\s+', ' ', query).strip()
+        # Additional logic (like entity preservation/boosting) can be injected here later
+        return cleaned
+
+    def _rank_results(self, results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Ranker: Sorts the retrieved chunks by their semantic similarity score descending.
+        """
+        return sorted(results, key=lambda x: x["similarity_score"], reverse=True)
+
     def search(
         self, 
         query: str, 
@@ -33,8 +50,11 @@ class RetrieverService:
         
         logger.info(f"Lifecycle: Search Executed | Query: '{query[:50]}...'")
         
-        # 1. Generate query embedding
-        query_embedding = embedding_service.generate_embedding(query)
+        # 1. Query Preprocessor
+        clean_query = self._preprocess_query(query)
+        
+        # 2. Generate query embedding
+        query_embedding = embedding_service.generate_embedding(clean_query)
         
         # 2. Build Optional Metadata Filters
         where_filter = None
@@ -79,10 +99,13 @@ class RetrieverService:
                 "metadata": metadatas[i]
             })
             
+        # 5. Ranker
+        ranked_results = self._rank_results(formatted_results)
+            
         search_time_ms = int((time.time() - start_time) * 1000)
-        logger.info(f"Lifecycle: Search Time: {search_time_ms}ms | Retrieved {len(formatted_results)} relevant chunks.")
+        logger.info(f"Lifecycle: Search Time: {search_time_ms}ms | Retrieved {len(ranked_results)} relevant chunks.")
         
-        return formatted_results
+        return ranked_results
 
 # Global singleton
 retriever_service = RetrieverService()

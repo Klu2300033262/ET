@@ -1,18 +1,12 @@
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import logging
 from backend.app.services.retriever_service import retriever_service
 from backend.app.models.base import BaseResponse
+from backend.app.models.search import SearchRequest
 
 logger = logging.getLogger("indusmind-ai")
 router = APIRouter()
-
-class SearchRequest(BaseModel):
-    query: str = Field(..., description="Natural language search query")
-    document_id: Optional[str] = Field(None, description="Optional document ID to filter search scope")
-    top_k: int = Field(5, ge=1, le=50, description="Maximum number of relevant chunks to return")
-    threshold: Optional[float] = Field(None, ge=0.0, le=1.0, description="Override default similarity threshold")
 
 @router.post(
     "",
