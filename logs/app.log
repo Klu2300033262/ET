@@ -1,0 +1,3 @@
+2026-07-14 14:06:57,872 - indusmind-ai - INFO - Logging configured at INFO level.
+2026-07-14 14:06:57,887 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
+2026-07-14 14:06:57,894 - httpx - INFO - HTTP Request: GET http://testserver/openapi.json "HTTP/1.1 200 OK"
