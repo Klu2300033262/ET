@@ -1,4 +1,5 @@
 import os
+import json
 import hashlib
 import logging
 import time
@@ -66,7 +67,8 @@ async def process_document(upload_file: UploadFile, file_bytes: bytes) -> Docume
     
     # 2. Storage Setup
     raw_path = os.path.join("data", "raw", f"{doc_id}_{upload_file.filename}")
-    processed_path = os.path.join("data", "processed", f"{doc_id}.txt")
+    processed_path = os.path.join("data", "processed", "text", f"{doc_id}.txt")
+    metadata_path = os.path.join("data", "processed", "metadata", f"{doc_id}.json")
     
     # 3. Save Raw Document
     with open(raw_path, "wb") as f:
@@ -119,7 +121,7 @@ async def process_document(upload_file: UploadFile, file_bytes: bytes) -> Docume
     # 6. Construct Final Report
     process_time_ms = int((time.time() - start_time) * 1000)
     
-    return DocumentIngestionResponse(
+    response_data = DocumentIngestionResponse(
         document_id=doc_id,
         filename=upload_file.filename,
         file_size_bytes=file_size,
@@ -135,3 +137,16 @@ async def process_document(upload_file: UploadFile, file_bytes: bytes) -> Docume
         parser_used=parser_used,
         saved_text_path=processed_path
     )
+    
+    # 7. Save JSON Metadata for Stage 4+
+    metadata_payload = response_data.model_dump(mode='json')
+    # Add source document per user spec
+    metadata_payload["source_document"] = upload_file.filename
+    metadata_payload["language"] = "en"
+    
+    with open(metadata_path, "w", encoding="utf-8") as f:
+        json.dump(metadata_payload, f, indent=2)
+        
+    logger.info(f"Lifecycle: Saved metadata to {metadata_path}")
+    
+    return response_data

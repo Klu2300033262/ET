@@ -9,7 +9,9 @@ def initialize_folders():
     required_directories = [
         "logs",
         "data/raw",
-        "data/processed",
+        "data/processed/text",
+        "data/processed/metadata",
+        "data/processed/chunks",  # Prepared for Stage 4
         "data/ocr",
         "data/images",
         "data/logs",

@@ -29,7 +29,7 @@ def test_upload_valid_txt(mock_process):
         "status": "COMPLETED",
         "extraction_method": "Automatic Parsing Routing",
         "parser_used": "Native UTF-8 Decoding",
-        "saved_text_path": "data/processed/test-uuid.txt"
+        "saved_text_path": "data/processed/text/test-uuid.txt"
     }
     
     files = {"file": ("logs.txt", b"Hello World!", "text/plain")}
