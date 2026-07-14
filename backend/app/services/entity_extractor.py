@@ -34,6 +34,18 @@ class EntityExtractor:
             logger.warning("spaCy model 'en_core_web_sm' not found. Will rely on Regex and Keywords.")
             self.nlp = None
 
+    def _resolve_icon(self, ent_type: str) -> str:
+        """Maps an entity type to a generic icon alias for the React Dashboard."""
+        icon_map = {
+            "Equipment/Component": "pump",
+            "Equipment/ID": "settings",
+            "Technician": "user",
+            "Date": "calendar",
+            "Department": "briefcase",
+            "Procedure": "file-text"
+        }
+        return icon_map.get(ent_type, "circle")
+
     def extract_entities(self, text: str, chunk_id: str, document_id: str) -> List[GraphEntity]:
         """Runs the chunk through the multi-tier extraction pipeline."""
         entities = []
@@ -56,9 +68,10 @@ class EntityExtractor:
                     entities.append(GraphEntity(
                         entity=ent.text.strip(),
                         type=ent_type,
+                        icon=self._resolve_icon(ent_type),
                         confidence=0.85, # Base heuristic confidence for spaCy
                         source_chunk=chunk_id,
-                        document_id=document_id,
+                        source_document=document_id,
                         offset=Offset(start=ent.start_char, end=ent.end_char)
                     ))
                     extracted_spans.add((ent.start_char, ent.end_char))
@@ -75,9 +88,10 @@ class EntityExtractor:
                     entities.append(GraphEntity(
                         entity=matched_text,
                         type="Equipment/ID",
+                        icon=self._resolve_icon("Equipment/ID"),
                         confidence=0.92, # High confidence for explicit pattern matches
                         source_chunk=chunk_id,
-                        document_id=document_id,
+                        source_document=document_id,
                         offset=Offset(start=start, end=end)
                     ))
                     extracted_spans.add((start, end))
@@ -98,9 +112,10 @@ class EntityExtractor:
                         entities.append(GraphEntity(
                             entity=text[idx:end_idx], # Preserve original casing
                             type=category,
+                            icon=self._resolve_icon(category),
                             confidence=0.75, # Lower confidence for raw keyword matching
                             source_chunk=chunk_id,
-                            document_id=document_id,
+                            source_document=document_id,
                             offset=Offset(start=idx, end=end_idx)
                         ))
                         extracted_spans.add((idx, end_idx))

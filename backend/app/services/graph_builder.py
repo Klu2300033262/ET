@@ -66,15 +66,24 @@ class GraphBuilderService:
         UNWIND $entities AS ent
         MERGE (n:IndustrialNode {name: ent.entity, type: ent.type})
         SET n.confidence = ent.confidence,
-            n.document_id = ent.document_id,
-            n.source_chunk = ent.source_chunk
+            n.source_document = ent.source_document,
+            n.source_chunk = ent.source_chunk,
+            n.icon = ent.icon,
+            n.graph_version = $graph_version,
+            n.builder = $builder,
+            n.created_at = $created_at
         """
         
         # Convert Pydantic to dicts for Neo4j driver
         ent_dicts = [e.model_dump() for e in result.entities]
         
         if ent_dicts:
-            neo4j_db.execute_write(node_query, {"entities": ent_dicts})
+            neo4j_db.execute_write(node_query, {
+                "entities": ent_dicts,
+                "graph_version": result.graph_version,
+                "builder": result.builder,
+                "created_at": result.created_at
+            })
             
         # Cypher for Relationships
         # We must iterate since dynamic relationship types (rel.relationship) can't be parameterized directly in MERGE

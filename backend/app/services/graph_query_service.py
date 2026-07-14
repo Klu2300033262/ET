@@ -9,20 +9,38 @@ class GraphQueryService:
     """Provides reusable graph queries without exposing Cypher directly to the frontend/APIs."""
     
     def get_database_statistics(self) -> Dict[str, Any]:
-        """Returns the total volume metrics of the Neo4j Graph."""
+        """Returns detailed volume metrics and distributions of the Neo4j Graph."""
         if not neo4j_db.is_online():
-            return {"status": "offline", "nodes": 0, "relationships": 0}
+            return {
+                "status": "offline", 
+                "nodes": 0, 
+                "relationships": 0,
+                "entity_types": [],
+                "relationship_types": [],
+                "average_degree": 0.0
+            }
             
         node_query = "MATCH (n:IndustrialNode) RETURN count(n) as node_count"
         edge_query = "MATCH ()-[r]->() RETURN count(r) as rel_count"
         
+        # Aggregations for dashboard widgets
+        entity_types_query = "MATCH (n:IndustrialNode) RETURN n.type as type, count(n) as count ORDER BY count DESC"
+        rel_types_query = "MATCH ()-[r]->() RETURN type(r) as type, count(r) as count ORDER BY count DESC"
+        avg_degree_query = "MATCH (n:IndustrialNode) OPTIONAL MATCH (n)-[r]-() WITH n, count(r) as degree RETURN avg(degree) as avg_degree"
+        
         nodes = neo4j_db.execute_read(node_query)
         edges = neo4j_db.execute_read(edge_query)
+        entity_types = neo4j_db.execute_read(entity_types_query)
+        rel_types = neo4j_db.execute_read(rel_types_query)
+        avg_degree = neo4j_db.execute_read(avg_degree_query)
         
         return {
             "status": "online",
             "nodes": nodes[0]["node_count"] if nodes else 0,
-            "relationships": edges[0]["rel_count"] if edges else 0
+            "relationships": edges[0]["rel_count"] if edges else 0,
+            "entity_types": entity_types,
+            "relationship_types": rel_types,
+            "average_degree": round(avg_degree[0]["avg_degree"] or 0.0, 2)
         }
 
     def execute_custom_query(self, cypher: str, parameters: Dict[str, Any] = None) -> GraphQueryResponse:
