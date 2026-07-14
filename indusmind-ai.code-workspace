@@ -1,0 +1,22 @@
+{
+  "folders": [
+    {
+      "name": "Root Project",
+      "path": "."
+    },
+    {
+      "name": "Backend Service",
+      "path": "backend"
+    },
+    {
+      "name": "Frontend Web App",
+      "path": "frontend"
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "python.terminal.activateEnvInTriggeredTerminal": true,
+    "editor.formatOnSave": true,
+    "typescript.tsdk": "node_modules/typescript/lib"
+  }
+}

@@ -1,0 +1,32 @@
+# Python Virtual Environments & Packages
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Node environment dependencies
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment credentials
+.env
+.env*.local
+
+# IDE configurations (excluding workspace file itself)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
