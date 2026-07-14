@@ -1,0 +1,15 @@
+INDUSMIND AI - INDUSTRIAL TEST MANUAL
+    
+    Equipment: Pump P-101
+    
+    Maintenance History:
+    Pump P-101 failed on 2024-05-12 due to a bearing overheat.
+    The bearing was replaced. 
+    Routine inspection must be performed every 6 months to comply with safety regulations.
+    
+    Connections:
+    Pump P-101 is connected to Valve A-12 and the Main Cooling System.
+    
+    Safety Compliance:
+    Operators must wear PPE at all times when servicing Pump P-101.
+    Warning: High pressure system.

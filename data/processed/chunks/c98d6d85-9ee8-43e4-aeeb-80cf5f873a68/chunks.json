@@ -1,0 +1,36 @@
+{
+  "document_metadata": {
+    "document_id": "c98d6d85-9ee8-43e4-aeeb-80cf5f873a68",
+    "filename": "sample_manual.pdf",
+    "file_size_bytes": 1352,
+    "num_pages": 1,
+    "document_type": "application/pdf",
+    "text_length": 507,
+    "ocr_used": false,
+    "processing_time_ms": 44,
+    "upload_timestamp": "2026-07-14T09:44:22.368072Z",
+    "sha256_hash": "6f3acd29beba7d3f5540efcad49d05d1bd1a0ef6e0a8c1931a36b68d40fab2bc",
+    "status": "COMPLETED",
+    "extraction_method": "Automatic Parsing Routing",
+    "saved_text_path": "data\\processed\\text\\c98d6d85-9ee8-43e4-aeeb-80cf5f873a68.txt",
+    "source_document": "sample_manual.pdf",
+    "language": "en",
+    "Total Characters": 450,
+    "Total Words": 68,
+    "Total Sentences": 6,
+    "Estimated Reading Time": "1 min",
+    "Document Category": "Uncategorized",
+    "Processing Timestamp": "2026-07-14T09:44:22.388560+00:00"
+  },
+  "chunks": [
+    {
+      "chunk_id": "dc41f3f7-3737-442c-b0f7-30a62661b35d",
+      "chunk_number": 1,
+      "start_offset": 0,
+      "end_offset": 450,
+      "character_count": 450,
+      "word_count": 68,
+      "content": "INDUSMIND AI - INDUSTRIAL TEST MANUAL\n\nEquipment: Pump P-101\n\nMaintenance History:\nPump P-101 failed on 2024-05-12 due to a bearing overheat.\nThe bearing was replaced.\nRoutine inspection must be performed every 6 months to comply with safety regulations.\n\nConnections:\nPump P-101 is connected to Valve A-12 and the Main Cooling System.\n\nSafety Compliance:\nOperators must wear PPE at all times when servicing Pump P-101.\nWarning: High pressure system."
+    }
+  ]
+}

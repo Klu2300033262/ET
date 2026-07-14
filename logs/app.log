@@ -1,3 +1,12 @@
 2026-07-14 14:06:57,872 - indusmind-ai - INFO - Logging configured at INFO level.
 2026-07-14 14:06:57,887 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/health "HTTP/1.1 200 OK"
 2026-07-14 14:06:57,894 - httpx - INFO - HTTP Request: GET http://testserver/openapi.json "HTTP/1.1 200 OK"
+2026-07-14 15:00:50,370 - indusmind-ai - INFO - Logging configured at INFO level.
+2026-07-14 15:00:50,386 - indusmind-ai - INFO - Initializing IndusMindAI Backend System...
+2026-07-14 15:00:50,390 - indusmind-ai - INFO - System directories initialized successfully.
+2026-07-14 15:01:09,203 - indusmind-ai - INFO - GET /docs Status 200 Time 1ms
+2026-07-14 15:01:16,904 - indusmind-ai - INFO - GET /openapi.json Status 200 Time 19ms
+2026-07-14 15:01:25,548 - indusmind-ai - INFO - GET /api/v1/health Status 200 Time 3ms
+2026-07-14 15:02:34,560 - indusmind-ai - INFO - GET /api/v1/health Status 200 Time 0ms
+2026-07-14 15:02:36,055 - indusmind-ai - INFO - GET /api/v1/health Status 200 Time 0ms
+2026-07-14 15:02:36,787 - indusmind-ai - INFO - GET /api/v1/health Status 200 Time 0ms

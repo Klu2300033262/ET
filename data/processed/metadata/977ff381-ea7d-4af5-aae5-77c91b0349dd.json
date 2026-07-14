@@ -1,0 +1,17 @@
+{
+  "document_id": "977ff381-ea7d-4af5-aae5-77c91b0349dd",
+  "filename": "sample_manual.pdf",
+  "file_size_bytes": 1352,
+  "num_pages": 1,
+  "document_type": "application/pdf",
+  "text_length": 507,
+  "ocr_used": false,
+  "processing_time_ms": 13,
+  "upload_timestamp": "2026-07-14T09:45:35.716197Z",
+  "sha256_hash": "4bc069b658ce01004b10207af54e69166c5aad5e4a4109c9c022f98e8d23a562",
+  "status": "COMPLETED",
+  "extraction_method": "Automatic Parsing Routing",
+  "saved_text_path": "data\\processed\\text\\977ff381-ea7d-4af5-aae5-77c91b0349dd.txt",
+  "source_document": "sample_manual.pdf",
+  "language": "en"
+}
