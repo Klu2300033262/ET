@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import ReactFlow, { Background, Controls, MiniMap, useNodesState, useEdgesState } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { 
@@ -244,8 +245,14 @@ export default function KnowledgeGraph() {
               <div>
                 <h3 className="text-lg font-bold text-slate-200">No Knowledge Graph Data Found</h3>
                 <p className="text-sm text-slate-400 mt-1 max-w-sm">
-                  The graph database is currently empty. Run **Build Knowledge Graph** on a processed document to extract topology relationships.
+                  The graph database is currently empty. Build the Knowledge Graph on a processed document to extract topology relationships.
                 </p>
+                <Link 
+                  to="/processed-docs"
+                  className="mt-4 px-4 py-2 bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-semibold rounded-lg shadow-lg transition-colors inline-block"
+                >
+                  Go to Processed Documents
+                </Link>
               </div>
             </div>
           ) : (

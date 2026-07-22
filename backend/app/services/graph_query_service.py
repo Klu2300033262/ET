@@ -48,7 +48,7 @@ class GraphQueryService:
         if not neo4j_db.is_online():
             return GraphQueryResponse(nodes=[], edges=[], statistics=self.get_database_statistics())
             
-        results = neo4j_db.execute_read(cypher, parameters)
+        results = neo4j_db.execute_read_raw(cypher, parameters)
         return self._format_for_frontend(results)
 
     def find_all_equipment(self) -> GraphQueryResponse:
@@ -69,7 +69,7 @@ class GraphQueryService:
         """
         return self.execute_custom_query(query, {"entity_name": entity_name})
 
-    def _format_for_frontend(self, neo4j_results: List[Dict[str, Any]]) -> GraphQueryResponse:
+    def _format_for_frontend(self, neo4j_results: List[Any]) -> GraphQueryResponse:
         """
         Translates raw Neo4j Paths/Nodes/Relationships into a standard
         {nodes: [...], edges: [...]} JSON topology consumed by React libraries (like vis.js).
@@ -78,18 +78,26 @@ class GraphQueryService:
         edges_dict = {}
         
         for record in neo4j_results:
-            # Result could be a node ('n') or a path ('path')
+            # Result could be a node ('n'), path ('path'), or relationship ('r')
             for key, value in record.items():
-                if hasattr(value, "nodes") and hasattr(value, "relationships"): # It's a Path
+                if not value:
+                    continue
+                # 1. Path
+                if hasattr(value, "nodes") and hasattr(value, "relationships"):
                     for node in value.nodes:
                         n_id = str(node.element_id)
                         nodes_dict[n_id] = {"id": n_id, "label": node.get("name"), "category": node.get("type"), "properties": dict(node)}
                     for rel in value.relationships:
                         e_id = str(rel.element_id)
                         edges_dict[e_id] = {"id": e_id, "source": str(rel.start_node.element_id), "target": str(rel.end_node.element_id), "label": rel.type}
-                elif hasattr(value, "labels"): # It's a single Node
+                # 2. Node
+                elif hasattr(value, "labels"):
                     n_id = str(value.element_id)
                     nodes_dict[n_id] = {"id": n_id, "label": value.get("name"), "category": value.get("type"), "properties": dict(value)}
+                # 3. Relationship
+                elif hasattr(value, "start_node") and hasattr(value, "end_node"):
+                    e_id = str(value.element_id)
+                    edges_dict[e_id] = {"id": e_id, "source": str(value.start_node.element_id), "target": str(value.end_node.element_id), "label": value.type}
 
         return GraphQueryResponse(
             nodes=list(nodes_dict.values()),

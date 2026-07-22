@@ -26,14 +26,23 @@ export default function AIAssistant() {
   const [history, setHistory] = useState([
     { id: session, title: 'New Conversation' }
   ]);
-  const [messages, setMessages] = useState([
+  const [sessionMessages, setSessionMessages] = useState({
+    [session]: [
+      {
+        role: 'assistant',
+        content: 'Hello. I am IndusMind AI. You can ask me about maintenance history, compliance rules, or equipment topologies. How can I assist you today?',
+      }
+    ]
+  });
+  const [input, setInput] = useState('');
+  const [expandedSection, setExpandedSection] = useState({});
+
+  const messages = sessionMessages[session] || [
     {
       role: 'assistant',
       content: 'Hello. I am IndusMind AI. You can ask me about maintenance history, compliance rules, or equipment topologies. How can I assist you today?',
     }
-  ]);
-  const [input, setInput] = useState('');
-  const [expandedSection, setExpandedSection] = useState({});
+  ];
 
   const toggleSection = (msgIdx, section) => {
     const key = `${msgIdx}-${section}`;
@@ -48,21 +57,28 @@ export default function AIAssistant() {
     queryKey: ['chatWithAgents'],
     mutationFn: (q) => chatWithAgents(q, session),
     onSuccess: (res) => {
-      // Invalidate system metrics to update AI request counter
-      setMessages((prev) => [
-        ...prev,
-        { 
-          role: 'assistant', 
-          content: res.answer || res.response || 'No answer found.', 
-          meta: res 
-        }
-      ]);
+      setSessionMessages(prev => {
+        const currentMsgs = prev[session] || [];
+        const newMsgs = [
+          ...currentMsgs,
+          { 
+            role: 'assistant', 
+            content: res.answer || res.response || 'No answer found.', 
+            meta: res 
+          }
+        ];
+        return { ...prev, [session]: newMsgs };
+      });
     },
     onError: (err) => {
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: 'Failed to communicate with LangGraph. Neo4j or Gemini API might be offline.', isError: true }
-      ]);
+      setSessionMessages(prev => {
+        const currentMsgs = prev[session] || [];
+        const newMsgs = [
+          ...currentMsgs,
+          { role: 'assistant', content: 'Failed to communicate with LangGraph. Neo4j or Gemini API might be offline.', isError: true }
+        ];
+        return { ...prev, [session]: newMsgs };
+      });
     }
   });
 
@@ -71,12 +87,18 @@ export default function AIAssistant() {
     if (!input.trim() || chatMutation.isPending) return;
     
     const queryText = input.trim();
-    setMessages((prev) => [...prev, { role: 'user', content: queryText }]);
+    
+    setSessionMessages(prev => {
+      const currentMsgs = prev[session] || [];
+      return { ...prev, [session]: [...currentMsgs, { role: 'user', content: queryText }] };
+    });
+    
     chatMutation.mutate(queryText);
     setInput('');
 
     // Update conversation title if first user message
-    if (messages.length === 1) {
+    const currentMsgs = sessionMessages[session] || [];
+    if (currentMsgs.filter(m => m.role === 'user').length === 0) {
       setHistory(prev => prev.map(h => h.id === session ? { ...h, title: queryText.slice(0, 24) + '...' } : h));
     }
   };
@@ -89,22 +111,29 @@ export default function AIAssistant() {
     const newSession = uuidv4();
     setSession(newSession);
     setHistory(prev => [{ id: newSession, title: 'New Conversation' }, ...prev]);
-    setMessages([
-      {
-        role: 'assistant',
-        content: 'Hello. I am IndusMind AI. You can ask me about maintenance history, compliance rules, or equipment topologies. How can I assist you today?',
-      }
-    ]);
+    setSessionMessages(prev => ({
+      ...prev,
+      [newSession]: [
+        {
+          role: 'assistant',
+          content: 'Hello. I am IndusMind AI. You can ask me about maintenance history, compliance rules, or equipment topologies. How can I assist you today?',
+        }
+      ]
+    }));
   };
 
   const handleClearHistory = () => {
-    setHistory([{ id: session, title: 'New Conversation' }]);
-    setMessages([
-      {
-        role: 'assistant',
-        content: 'Hello. I am IndusMind AI. You can ask me about maintenance history, compliance rules, or equipment topologies. How can I assist you today?',
-      }
-    ]);
+    const newSession = uuidv4();
+    setSession(newSession);
+    setHistory([{ id: newSession, title: 'New Conversation' }]);
+    setSessionMessages({
+      [newSession]: [
+        {
+          role: 'assistant',
+          content: 'Hello. I am IndusMind AI. You can ask me about maintenance history, compliance rules, or equipment topologies. How can I assist you today?',
+        }
+      ]
+    });
   };
 
   const handleCopy = (text) => {
@@ -158,6 +187,7 @@ export default function AIAssistant() {
               {history.map((h) => (
                 <div 
                   key={h.id} 
+                  onClick={() => setSession(h.id)}
                   className={`px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-colors truncate ${
                     h.id === session ? 'bg-industrial-800 text-brand-accent' : 'text-slate-400 hover:bg-industrial-800/40 hover:text-slate-200'
                   }`}

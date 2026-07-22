@@ -74,6 +74,21 @@ class Neo4jService:
             logger.error(f"Neo4j Read Transaction Failed: {e}")
             raise
 
+    def execute_read_raw(self, query: str, parameters: Optional[Dict[str, Any]] = None):
+        """Executes a read transaction safely and returns raw Neo4j records/objects."""
+        if not self.is_online():
+            logger.warning("Attempted Neo4j raw read while DB is offline.")
+            return []
+            
+        try:
+            with self.driver.session() as session:
+                def _run(tx):
+                    return list(tx.run(query, parameters or {}))
+                return session.execute_read(_run)
+        except Exception as e:
+            logger.error(f"Neo4j Raw Read Transaction Failed: {e}")
+            raise
+
     @staticmethod
     def _execute_tx(tx, query: str, parameters: Optional[Dict[str, Any]] = None):
         """Internal transaction execution wrapper."""
