@@ -44,6 +44,8 @@ class Neo4jService:
             self.driver.close()
 
     def is_online(self) -> bool:
+        if self.driver is None:
+            self._connect()
         return self.driver is not None
 
     def execute_write(self, query: str, parameters: Optional[Dict[str, Any]] = None) -> Any:
