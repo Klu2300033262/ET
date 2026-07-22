@@ -7,7 +7,8 @@ import {
   embedDocument, 
   buildGraph, 
   deleteDocument,
-  downloadOriginalPDF 
+  downloadOriginalPDF,
+  getDocumentChunks 
 } from '../services/api';
 import { 
   FileText, 
@@ -48,10 +49,7 @@ export default function DocumentDetails() {
 
   const { data: chunksData, isLoading: chunksLoading } = useQuery({
     queryKey: ['docChunks', documentId],
-    queryFn: async () => {
-      const res = await fetch(`http://localhost:8000/api/v1/documents/${documentId}/chunks`);
-      return res.json();
-    },
+    queryFn: () => getDocumentChunks(documentId),
     enabled: activeTab === 'chunks',
   });
 
