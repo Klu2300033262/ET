@@ -6,7 +6,8 @@ import {
   embedDocument, 
   buildGraph, 
   deleteDocument,
-  downloadOriginalPDF
+  downloadOriginalPDF,
+  processDocument
 } from '../services/api';
 import { 
   FileText, 
@@ -42,6 +43,11 @@ export default function ProcessedDocuments() {
   const docs = data?.data || [];
 
   // Mutations
+  const processMutation = useMutation({
+    mutationFn: (id) => processDocument(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['processedDocs'] })
+  });
+
   const embedMutation = useMutation({
     mutationFn: (id) => embedDocument(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['processedDocs'] })
@@ -292,23 +298,48 @@ export default function ProcessedDocuments() {
                         <Info className="w-4 h-4" />
                       </Link>
                       
-                      {!doc.embedded && !doc.embedding_status && (
+                      {(!doc.total_chunks || doc.total_chunks === 0) && (
+                        <button 
+                          onClick={() => processMutation.mutate(doc.document_id)}
+                          className="text-emerald-400 hover:text-emerald-300 transition-colors"
+                          title="Clean and chunk document"
+                          disabled={processMutation.isPending}
+                        >
+                          {processMutation.isPending && processMutation.variables === doc.document_id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <RefreshCw className="w-4 h-4" />
+                          )}
+                        </button>
+                      )}
+
+                      {doc.total_chunks > 0 && !doc.embedded && !doc.embedding_status && (
                         <button 
                           onClick={() => embedMutation.mutate(doc.document_id)}
                           className="text-brand-primary hover:text-brand-accent transition-colors"
                           title="Embed document"
+                          disabled={embedMutation.isPending}
                         >
-                          <Play className="w-4 h-4" />
+                          {embedMutation.isPending && embedMutation.variables === doc.document_id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Play className="w-4 h-4" />
+                          )}
                         </button>
                       )}
 
-                      {doc.embedded && !doc.graph_built && !doc.graph_status && (
+                      {doc.total_chunks > 0 && (doc.embedded || doc.embedding_status === 'EMBEDDED') && !doc.graph_built && !doc.graph_status && (
                         <button 
                           onClick={() => graphMutation.mutate(doc.document_id)}
                           className="text-purple-400 hover:text-purple-300 transition-colors"
                           title="Build knowledge graph"
+                          disabled={graphMutation.isPending}
                         >
-                          <Hexagon className="w-4 h-4" />
+                          {graphMutation.isPending && graphMutation.variables === doc.document_id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Hexagon className="w-4 h-4" />
+                          )}
                         </button>
                       )}
                       
