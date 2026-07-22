@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     
     # Gemini API Credentials
     GEMINI_API_KEY: Optional[str] = None
+    GEMINI_LLM_MODEL: str = "gemini-1.5-pro"
+    GEMINI_FALLBACK_MODEL: str = "gemini-1.5-flash"
     
     # Neo4j Settings
     NEO4J_URI: str = "bolt://localhost:7687"

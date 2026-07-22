@@ -38,6 +38,19 @@ async def embed_document(document_id: str):
             
         was_ingested = vector_store.ingest_chunks(document_metadata, chunks)
         
+        # Update document metadata with embedding status
+        meta_path = os.path.join("data", "processed", "metadata", f"{document_id}.json")
+        if os.path.exists(meta_path):
+            try:
+                with open(meta_path, "r", encoding="utf-8") as f:
+                    meta = json.load(f)
+                meta["embedded"] = True
+                meta["embedding_status"] = "EMBEDDED"
+                with open(meta_path, "w", encoding="utf-8") as f:
+                    json.dump(meta, f, indent=2)
+            except Exception:
+                pass
+        
         if not was_ingested:
             return BaseResponse(
                 success=True,

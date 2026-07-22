@@ -3,6 +3,7 @@ import logging
 from fastapi import APIRouter, HTTPException
 from backend.app.models.chat import ChatRequest, ChatResponse
 from backend.app.services.agents.graph import indusmind_graph
+from backend.app.services.metrics_service import metrics_service
 
 logger = logging.getLogger("indusmind-ai")
 router = APIRouter()
@@ -47,6 +48,9 @@ async def chat_endpoint(request: ChatRequest):
         answer = final_state.get("final_answer", "Error resolving answer.")
         summary = answer.split(".")[0] + "." if "." in answer else answer
         
+        confidence = final_state.get("overall_confidence", 0.0)
+        metrics_service.record_chat(confidence)
+        
         return ChatResponse(
             answer=answer,
             summary=summary,
@@ -55,7 +59,7 @@ async def chat_endpoint(request: ChatRequest):
             graph_nodes=final_state.get("graph_nodes", []),
             maintenance_analysis=final_state.get("maintenance_insights"),
             compliance_analysis=final_state.get("compliance_insights"),
-            confidence=final_state.get("overall_confidence", 0.0),
+            confidence=confidence,
             execution_time_ms=execution_time_ms,
             reasoning_trace=final_state.get("reasoning_trace", []),
             sources=list(set(final_state.get("sources", []))) # Deduplicate final sources

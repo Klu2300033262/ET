@@ -1,6 +1,12 @@
+import os
+
+from backend.app.config.settings import settings
+
 # Models Configuration
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-GEMINI_LLM_MODEL = "gemini-2.5-flash"
+EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
+GEMINI_LLM_MODEL = settings.GEMINI_LLM_MODEL
+GEMINI_FALLBACK_MODEL = settings.GEMINI_FALLBACK_MODEL
+MAX_SEARCH_RESULTS = int(os.getenv("MAX_SEARCH_RESULTS", 5))
 
 # Parsing Parameters
 CHUNK_SIZE = 1000

@@ -12,6 +12,7 @@ import MaintenanceIntelligence from './pages/MaintenanceIntelligence';
 import ComplianceIntelligence from './pages/ComplianceIntelligence';
 import Analytics from './pages/Analytics';
 import SystemStatus from './pages/SystemStatus';
+import DocumentDetails from './pages/DocumentDetails';
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/upload" element={<DocumentUpload />} />
             <Route path="/documents" element={<ProcessedDocuments />} />
+            <Route path="/documents/:documentId" element={<DocumentDetails />} />
             <Route path="/search" element={<SemanticSearch />} />
             <Route path="/chat" element={<AIAssistant />} />
             <Route path="/graph" element={<KnowledgeGraph />} />

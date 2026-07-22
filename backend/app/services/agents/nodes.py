@@ -9,6 +9,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from backend.app.services.agents.state import AgentState
 from backend.app.services.retriever_service import retriever_service as retriever
 from backend.app.services.graph_query_service import graph_query
+from backend.app.config.constants import GEMINI_LLM_MODEL, GEMINI_FALLBACK_MODEL
 
 logger = logging.getLogger("indusmind-ai")
 
@@ -41,6 +42,9 @@ def rule_based_router_node(state: AgentState) -> AgentState:
     # Fallback
     if len(selected_agents) == 1:
         selected_agents.append("SearchAgent")
+        
+    # Deduplicate while preserving insertion order
+    selected_agents = list(dict.fromkeys(selected_agents))
         
     duration = (time.time() - start_time) * 1000
     return {
@@ -183,7 +187,7 @@ def knowledge_agent_node(state: AgentState) -> AgentState:
         return _mock_knowledge_response(state, start_time)
 
     try:
-        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=api_key, temperature=0.2)
+        llm = ChatGoogleGenerativeAI(model=GEMINI_LLM_MODEL, google_api_key=api_key, temperature=0.2)
         
         # Compile strictly constrained context
         context_str = f"Memory: {state.get('memory_context')}\n\n"
@@ -221,7 +225,12 @@ def knowledge_agent_node(state: AgentState) -> AgentState:
             HumanMessage(content=f"Question: {state['question']}\n\nContext:\n{context_str}")
         ]
         
-        response = llm.invoke(messages)
+        try:
+            response = llm.invoke(messages)
+        except Exception as api_err:
+            logger.warning(f"Primary model {GEMINI_LLM_MODEL} failed ({api_err}). Falling back to {GEMINI_FALLBACK_MODEL}.")
+            fallback_llm = ChatGoogleGenerativeAI(model=GEMINI_FALLBACK_MODEL, google_api_key=api_key, temperature=0.2)
+            response = fallback_llm.invoke(messages)
         
         # Compute confidence heuristically based on the amount of evidence
         confidence = 0.95 if chunks or nodes else 0.10
@@ -232,7 +241,7 @@ def knowledge_agent_node(state: AgentState) -> AgentState:
         return {
             "final_answer": response.content,
             "overall_confidence": confidence,
-            "reasoning_trace": ["[KnowledgeAgent] Synthesized final answer using Gemini 2.5 Flash."],
+            "reasoning_trace": [f"[KnowledgeAgent] Synthesized final answer."],
             "processing_times": {"KnowledgeAgent": duration}
         }
         

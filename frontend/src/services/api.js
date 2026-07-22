@@ -13,6 +13,40 @@ export const getSystemStatus = async () => {
   return res.data;
 };
 
+export const getSystemMetrics = async () => {
+  const res = await api.get('/system/metrics');
+  return res.data;
+};
+
+export const getSystemLogs = async (lines = 100) => {
+  const res = await api.get(`/system/logs?lines=${lines}`);
+  return res.data;
+};
+
+export const getSystemRoutes = async () => {
+  const res = await api.get('/system/routes');
+  return res.data;
+};
+
+export const deleteDocument = async (documentId) => {
+  const res = await api.delete(`/documents/${documentId}`);
+  return res.data;
+};
+
+export const getDocumentText = async (documentId) => {
+  const res = await api.get(`/documents/${documentId}/text`);
+  return res.data;
+};
+
+export const getDocumentDetails = async (documentId) => {
+  const res = await api.get(`/documents/${documentId}`);
+  return res.data;
+};
+
+export const downloadOriginalPDF = (documentId) => {
+  return `${api.defaults.baseURL}/documents/${documentId}/download`;
+};
+
 export const uploadDocument = async (file) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -57,5 +91,10 @@ export const semanticSearch = async (query, topK = 5, threshold = 0.3) => {
 export const getGraphQuery = async (query) => {
   // Using an abstract endpoint for the UI visualizer
   const res = await api.post('/graph/query', { query });
+  return res.data;
+};
+
+export const getProcessedDocuments = async () => {
+  const res = await api.get('/documents/');
   return res.data;
 };

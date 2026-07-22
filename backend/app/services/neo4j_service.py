@@ -26,7 +26,7 @@ class Neo4jService:
             return
 
         try:
-            self.driver = GraphDatabase.driver(self.uri, auth=(self.user, self.password))
+            self.driver = GraphDatabase.driver(self.uri, auth=(self.user, self.password), connection_timeout=5.0)
             self.driver.verify_connectivity()
             logger.info("Successfully connected to Neo4j AuraDB.")
         except exceptions.ServiceUnavailable as e:
@@ -34,6 +34,9 @@ class Neo4jService:
             self.driver = None
         except exceptions.AuthError as e:
             logger.error(f"Failed to connect to Neo4j. Invalid credentials. Error: {e}")
+            self.driver = None
+        except Exception as e:
+            logger.error(f"Failed to connect to Neo4j. Database is offline. Error: {e}")
             self.driver = None
 
     def close(self):

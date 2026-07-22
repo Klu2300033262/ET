@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 import logging
 from backend.app.services.processing_service import process_document_pipeline
 from backend.app.models.base import BaseResponse
+from backend.app.services.metrics_service import metrics_service
 
 logger = logging.getLogger("indusmind-ai")
 router = APIRouter()
@@ -16,6 +17,8 @@ async def process_document_endpoint(document_id: str):
     """Triggers the Stage 4 Processing Pipeline."""
     try:
         result = process_document_pipeline(document_id)
+        proc_time = result.get("statistics", {}).get("Processing Time (ms)", 0.0)
+        metrics_service.record_processing(proc_time)
         return BaseResponse(
             success=True,
             message="Document successfully cleaned and chunked.",

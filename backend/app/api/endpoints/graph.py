@@ -17,6 +17,22 @@ async def build_graph(document_id: str):
     """Triggers the Stage 6 NLP extraction pipeline to map chunks into Neo4j."""
     try:
         result = graph_builder.build_graph_from_document(document_id)
+        
+        # Update document metadata with graph status
+        import os
+        import json
+        meta_path = os.path.join("data", "processed", "metadata", f"{document_id}.json")
+        if os.path.exists(meta_path):
+            try:
+                with open(meta_path, "r", encoding="utf-8") as f:
+                    meta = json.load(f)
+                meta["graph_built"] = True
+                meta["graph_status"] = "GRAPH_BUILT"
+                with open(meta_path, "w", encoding="utf-8") as f:
+                    json.dump(meta, f, indent=2)
+            except Exception:
+                pass
+                
         return BaseResponse(
             success=True,
             message="Graph extraction and insertion complete.",
