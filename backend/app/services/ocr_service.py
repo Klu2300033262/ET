@@ -7,14 +7,27 @@ import numpy as np
 
 logger = logging.getLogger("indusmind-ai")
 
-# Initialize EasyOCR reader securely (only English for now to keep memory low)
-# This initialization happens once to avoid overhead per request
-try:
-    reader = easyocr.Reader(['en'], gpu=False)
-    EASY_OCR_AVAILABLE = True
-except Exception as e:
-    logger.error(f"Failed to initialize EasyOCR: {e}")
-    EASY_OCR_AVAILABLE = False
+import threading
+
+_reader = None
+_reader_lock = threading.Lock()
+_easy_ocr_failed = False
+
+def _get_reader():
+    global _reader, _easy_ocr_failed
+    if _easy_ocr_failed:
+        return None
+    if _reader is None:
+        with _reader_lock:
+            if _reader is None and not _easy_ocr_failed:
+                try:
+                    logger.info("Initializing EasyOCR reader (lazy-loaded)...")
+                    _reader = easyocr.Reader(['en'], gpu=False)
+                    logger.info("EasyOCR reader initialized successfully.")
+                except Exception as e:
+                    logger.error(f"Failed to initialize EasyOCR: {e}")
+                    _easy_ocr_failed = True
+    return _reader
 
 def extract_text_from_image(image_bytes: bytes) -> str:
     """
@@ -31,12 +44,13 @@ def extract_text_from_image(image_bytes: bytes) -> str:
             image = image.convert("RGB")
             
         # Strategy 1: EasyOCR
-        if EASY_OCR_AVAILABLE:
+        ocr_reader = _get_reader()
+        if ocr_reader is not None:
             try:
                 logger.debug("Attempting EasyOCR extraction.")
                 # EasyOCR expects numpy array
                 img_array = np.array(image)
-                results = reader.readtext(img_array, detail=0)
+                results = ocr_reader.readtext(img_array, detail=0)
                 extracted_text = "\n".join(results)
                 if extracted_text.strip():
                     logger.debug("EasyOCR extraction successful.")
