@@ -248,7 +248,7 @@ export default function KnowledgeGraph() {
                   The graph database is currently empty. Build the Knowledge Graph on a processed document to extract topology relationships.
                 </p>
                 <Link 
-                  to="/processed-docs"
+                  to="/documents"
                   className="mt-4 px-4 py-2 bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-semibold rounded-lg shadow-lg transition-colors inline-block"
                 >
                   Go to Processed Documents
