@@ -1,6 +1,5 @@
 import logging
 from typing import List, Optional
-from sentence_transformers import SentenceTransformer
 
 logger = logging.getLogger("indusmind-ai")
 
@@ -22,6 +21,7 @@ class EmbeddingService:
         """Lazy loads the primary BAAI model, falls back to MiniLM if unavailable."""
         if self.model is None:
             logger.info("Lifecycle: Embedding Model Initialization Started")
+            from sentence_transformers import SentenceTransformer
             try:
                 # Primary highly-optimized BAAI model
                 logger.info("Attempting to load BAAI/bge-small-en-v1.5...")

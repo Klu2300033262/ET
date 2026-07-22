@@ -1,5 +1,4 @@
 import logging
-import easyocr
 import pytesseract
 from PIL import Image
 import io
@@ -22,6 +21,7 @@ def _get_reader():
             if _reader is None and not _easy_ocr_failed:
                 try:
                     logger.info("Initializing EasyOCR reader (lazy-loaded)...")
+                    import easyocr
                     _reader = easyocr.Reader(['en'], gpu=False)
                     logger.info("EasyOCR reader initialized successfully.")
                 except Exception as e:

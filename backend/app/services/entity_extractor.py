@@ -1,6 +1,5 @@
 import re
 import logging
-import spacy
 from typing import List, Dict, Any
 from backend.app.models.graph import GraphEntity, Offset
 
@@ -35,6 +34,7 @@ class EntityExtractor:
     def _load_spacy(self):
         try:
             # We use the free, offline small core web model for fast NER
+            import spacy
             self.nlp = spacy.load("en_core_web_sm")
             logger.info("Loaded spaCy NLP model: en_core_web_sm")
         except OSError:
