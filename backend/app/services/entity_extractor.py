@@ -13,6 +13,13 @@ INDUSTRIAL_KEYWORDS = {
     "Procedure": ["Inspection", "Maintenance", "Safety Procedure", "Lockout Tagout"]
 }
 
+def is_english_ascii(s: str) -> bool:
+    try:
+        s.encode('ascii')
+        return True
+    except UnicodeEncodeError:
+        return False
+
 class EntityExtractor:
     """
     Modular 4-Tier Entity Extraction Pipeline.
@@ -65,8 +72,11 @@ class EntityExtractor:
                     ent_type = "Date"
                     
                 if ent.label_ not in ["CARDINAL", "ORDINAL"]: # Ignore raw numbers
+                    ent_text = ent.text.strip()
+                    if not is_english_ascii(ent_text):
+                        continue
                     entities.append(GraphEntity(
-                        entity=ent.text.strip(),
+                        entity=ent_text,
                         type=ent_type,
                         icon=self._resolve_icon(ent_type),
                         confidence=0.85, # Base heuristic confidence for spaCy
@@ -83,6 +93,8 @@ class EntityExtractor:
             
             # Simple heuristic: must have at least one digit to be a complex industrial ID
             if any(char.isdigit() for char in matched_text):
+                if not is_english_ascii(matched_text):
+                    continue
                 # Ensure we don't overlap with spaCy extractions
                 if not any(s <= start and end <= e for s, e in extracted_spans):
                     entities.append(GraphEntity(
