@@ -18,12 +18,14 @@ def setup_middleware(app: FastAPI):
         allow_headers=["*"],
     )
 
-    # Request Time Logging Middleware
+    # Request Time Logging and CORS PNA Middleware
     @app.middleware("http")
-    async def add_process_time_header(request: Request, call_next):
+    async def add_process_time_and_cors_pna_header(request: Request, call_next):
         start_time = time.time()
         response = await call_next(request)
         process_time = time.time() - start_time
         response.headers["X-Process-Time"] = str(process_time)
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
         logger.info(f"{request.method} {request.url.path} Status {response.status_code} Time {int(process_time * 1000)}ms")
         return response
+
